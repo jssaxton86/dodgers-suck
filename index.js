@@ -13,6 +13,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const config = require("config");
+const redis = require("lib/data/redis");
 
 const app = express();
 
