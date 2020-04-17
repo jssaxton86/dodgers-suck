@@ -4,6 +4,10 @@
  * World Series in a while !!!
  */
 
+'use strict';
+process.env.NODE_PATH = __dirname;
+require("module").Module._initPaths();
+
 const http = require('http');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -15,35 +19,11 @@ const app = express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
-app.get("/headers", (req, res, next) => {
-    const asJson = {
-        status: 200,
-        headers: req.headers
-    };
+app.use('/api/v1', require('api/v1'));
 
-    res.setHeader("Content-Type", "application/json");
-    res.status(200).send(asJson);
-});
-
-app.use("*", (req, res, next) => {
-    // make new error object later to extend error with status code
-    const error = new Error("Page not found with path: ", req.baseUrl ? req.baseUrl : "/");
-    error.code = 404;
-
-    next(error);
-});
+// Initialize middleware
+require("lib/startup")(app);
 
 const server = app.listen(config.server.port, function(){
     console.log(`Server listening on port: ${config.server.port}`);
-});
-
-app.use( (err, req, res, next) => {
-    const status = err && err.status ? err.status : 500;
-    const message = err && err.message ? err.message : "Server encountered an error.";
-
-    res.setHeader("Content-Type", "application/json");
-    res.send({
-        status: status,
-        message: message
-    });
 });
