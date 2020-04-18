@@ -1,6 +1,7 @@
 const express = require('express');
 
 const routes = [];
+routes.push(require('./articles'));
 routes.push(require('./headers'));
 routes.push(require('./pokemon'));
 routes.push(require('./s3'));
