@@ -8,23 +8,17 @@
 process.env.NODE_PATH = __dirname;
 require("module").Module._initPaths();
 
-const http = require('http');
-const express = require('express');
-const bodyParser = require('body-parser');
+const cluster = require('cluster');
+const config = require('config');
+const os = require('os')
 
-const config = require("config");
-const redis = require("lib/data/redis");
+const cpuCount = config.server.threads || os.cpus().length;
 
-const app = express();
+if (cluster.isMaster){
+    for (let i = 0; i < cpuCount; i++){
+        cluster.fork();
+    }
+} else {
+    require("worker")();
+}
 
-app.use(bodyParser.urlencoded({extended:true}));
-app.use(bodyParser.json());
-
-app.use('/api/v1', require('api/v1'));
-
-// Initialize middleware
-require("lib/startup")(app);
-
-const server = app.listen(config.server.port, function(){
-    console.log(`Server listening on port: ${config.server.port}`);
-});
