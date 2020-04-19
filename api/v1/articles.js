@@ -2,7 +2,7 @@ const router = require('express').Router();
 const { ArticleDAL } = require('lib/dal/mongo');
 
 router.put("/articles", (req, res, next) => {
-    ArticleDAL.upsert(req.body.name, req.body.author, req.body.content)
+    ArticleDAL.upsert(req.body.name || req.body.title, req.body.author, req.body.content)
     .then( () => {
         res.setHeader('Content-Type', 'text/plain');
         res.status(200).send("success");
